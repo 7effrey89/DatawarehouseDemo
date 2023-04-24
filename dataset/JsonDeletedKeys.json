@@ -1,0 +1,1373 @@
+{
+	"name": "JsonDeletedKeys",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage2",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"container": {
+				"type": "string"
+			},
+			"folder": {
+				"type": "string"
+			},
+			"file": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "UniversalDatasets"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().folder",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().container",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"d": {
+					"type": "object",
+					"properties": {
+						"results": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"__metadata": {
+										"type": "object",
+										"properties": {
+											"uri": {
+												"type": "string"
+											},
+											"type": {
+												"type": "string"
+											}
+										}
+									},
+									"userId": {
+										"type": "string"
+									},
+									"reviewFreq": {
+										"type": "null"
+									},
+									"jobCode": {
+										"type": "null"
+									},
+									"matrix1Label": {
+										"type": "null"
+									},
+									"lastModifiedWithTZ": {
+										"type": "string"
+									},
+									"objective": {
+										"type": "string"
+									},
+									"ssn": {
+										"type": "null"
+									},
+									"division": {
+										"type": "string"
+									},
+									"custom02": {
+										"type": "string"
+									},
+									"custom01": {
+										"type": "string"
+									},
+									"custom04": {
+										"type": "string"
+									},
+									"custom03": {
+										"type": "string"
+									},
+									"custom06": {
+										"type": "string"
+									},
+									"custom05": {
+										"type": "string"
+									},
+									"custom08": {
+										"type": "null"
+									},
+									"custom07": {
+										"type": "null"
+									},
+									"custom09": {
+										"type": "null"
+									},
+									"onboardingId": {
+										"type": "null"
+									},
+									"state": {
+										"type": "string"
+									},
+									"fax": {
+										"type": "null"
+									},
+									"timeZone": {
+										"type": "string"
+									},
+									"defaultLocale": {
+										"type": "string"
+									},
+									"dateOfPosition": {
+										"type": "null"
+									},
+									"nationality": {
+										"type": "string"
+									},
+									"teamMembersSize": {
+										"type": "integer"
+									},
+									"lastReviewDate": {
+										"type": "null"
+									},
+									"businessPhone": {
+										"type": "null"
+									},
+									"status": {
+										"type": "string"
+									},
+									"lastName": {
+										"type": "string"
+									},
+									"emplStatus": {
+										"type": "null"
+									},
+									"ethnicity": {
+										"type": "null"
+									},
+									"city": {
+										"type": "string"
+									},
+									"competency": {
+										"type": "string"
+									},
+									"businessSegment": {
+										"type": "null"
+									},
+									"displayName": {
+										"type": "string"
+									},
+									"nickname": {
+										"type": "null"
+									},
+									"email": {
+										"type": "string"
+									},
+									"newToPosition": {
+										"type": "null"
+									},
+									"assignmentUUID": {
+										"type": "string"
+									},
+									"dateOfBirth": {
+										"type": "string"
+									},
+									"talentPool": {
+										"type": "null"
+									},
+									"custom11": {
+										"type": "null"
+									},
+									"defaultFullName": {
+										"type": "string"
+									},
+									"custom10": {
+										"type": "null"
+									},
+									"custom13": {
+										"type": "null"
+									},
+									"custom12": {
+										"type": "string"
+									},
+									"custom15": {
+										"type": "string"
+									},
+									"custom14": {
+										"type": "null"
+									},
+									"totalTeamSize": {
+										"type": "string"
+									},
+									"married": {
+										"type": "null"
+									},
+									"cellPhone": {
+										"type": "null"
+									},
+									"country": {
+										"type": "string"
+									},
+									"zipCode": {
+										"type": "null"
+									},
+									"lastModifiedDateTime": {
+										"type": "string"
+									},
+									"minority": {
+										"type": "null"
+									},
+									"suffix": {
+										"type": "null"
+									},
+									"matrixManaged": {
+										"type": "null"
+									},
+									"addressLine1": {
+										"type": "string"
+									},
+									"addressLine2": {
+										"type": "null"
+									},
+									"sciLastModified": {
+										"type": "string"
+									},
+									"addressLine3": {
+										"type": "null"
+									},
+									"mi": {
+										"type": "null"
+									},
+									"potential": {
+										"type": "string"
+									},
+									"level": {
+										"type": "null"
+									},
+									"homePhone": {
+										"type": "null"
+									},
+									"firstName": {
+										"type": "string"
+									},
+									"employee_class": {
+										"type": "null"
+									},
+									"lastModified": {
+										"type": "string"
+									},
+									"salutation": {
+										"type": "null"
+									},
+									"empId": {
+										"type": "string"
+									},
+									"impactOfLoss": {
+										"type": "null"
+									},
+									"benchStrength": {
+										"type": "null"
+									},
+									"futureLeader": {
+										"type": "null"
+									},
+									"title": {
+										"type": "string"
+									},
+									"department": {
+										"type": "string"
+									},
+									"isPrimaryAssignment": {
+										"type": "boolean"
+									},
+									"hireDate": {
+										"type": "string"
+									},
+									"matrix2Label": {
+										"type": "null"
+									},
+									"loginMethod": {
+										"type": "null"
+									},
+									"citizenship": {
+										"type": "null"
+									},
+									"reasonForLeaving": {
+										"type": "null"
+									},
+									"riskOfLoss": {
+										"type": "null"
+									},
+									"performance": {
+										"type": "string"
+									},
+									"location": {
+										"type": "string"
+									},
+									"keyPosition": {
+										"type": "null"
+									},
+									"username": {
+										"type": "string"
+									},
+									"delegatorOfAutoDelegateConfigNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"secondManager": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"ethnicityNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_HI_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"cust_headOfBAOfcust_BANav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"hr": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"incumbentOfPositionNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Benef_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"headOfUnitOfFOBusinessUnitNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Carcino_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userIdOfTimeAccountSnapshotNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Other_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Illness_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"cust_headOfUnitOfcust_TeamNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_EEO_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"cust_initiatorOfPositionNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userIdOfTemporaryTimeInformationNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"cust_headOfUnitOfcust_SubteamNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_PensionPlan_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"proxy": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"targetIdOfTimeManagementAlertNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_companycar_parentNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"matrixReports": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userIdOfWorkScheduleNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"directReports": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_PersDoc_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_ID_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"personKeyNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userIdOfEmployeeTimeGroupNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"codeOfRightToReturnNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_cantine_DK_parentNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"benchStrengthNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"manager": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userSysIdOfWorkOrderNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Abs_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"impactOfLossNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"competencyRatingNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Perm_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userIdOfAccrualCalculationBaseNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"custom08Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Term_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userPermissionsNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Hazard_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"reasonForLeavingNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_RedDoc_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"customManager": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_DKTax_parentNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"workOrderOwnerIdOfWorkOrderNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"costCenterManagerOfFOCostCenterNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"employmentIdentityOfDRTMPurgeFreezeNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"matrixManager": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"secondReports": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_BenefPlan_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Denmark_Statistik_ParentNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"workerOfPaymentInformationV3Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userIdOfEmployeeTimeNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"empInfo": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"usersSysIdOfSecondaryAssignmentsItemNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_InFiles_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userIdOfEmployeePayrollRunResultsNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Legal_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userIdOfTimeAccountNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_EmpChange_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userIdOfBudgetGroupNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"headOfUnitOfFODepartmentNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Forms_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"headOfUnitOfFODivisionNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"hrReports": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"riskOfLossNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_EmpFiles_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"assigneeUserIdOfDomainEventAlertNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"ownerOfTalentPoolNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"customReports": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_AAP_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_MiscellaneousNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_Disc_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"userIdOfPositionRightToReturnNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"delegateeOfAutoDelegateDetailNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"externalCodeOfcust_EmpContr_1Nav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									},
+									"usersSysIdOfHireDateChangeNav": {
+										"type": "object",
+										"properties": {
+											"__deferred": {
+												"type": "object",
+												"properties": {
+													"uri": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						},
+						"__next": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

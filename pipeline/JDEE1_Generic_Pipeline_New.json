@@ -1,0 +1,551 @@
+{
+	"name": "JDEE1_Generic_Pipeline_New",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy To Stage",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Lookup WaterMark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set LastUpdate Column Var",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "select * from @{pipeline().parameters.srcSchemaName}.@{pipeline().parameters.srcTableName} WHERE @{variables('lastModifiedDateColumn')}>'@{replace(string(activity('Lookup WaterMark').output.firstRow.lastLoad),'\"','')}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SnowflakeSink",
+						"preCopyScript": {
+							"value": "TRUNCATE TABLE @{pipeline().parameters.stgSchemaName}.@{pipeline().parameters.stgTableName}",
+							"type": "Expression"
+						},
+						"importSettings": {
+							"type": "SnowflakeImportCopyCommand"
+						}
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "staging"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "F0006",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SnowFlakeDataset_JDEE1",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": {
+								"value": "@pipeline().parameters.stgSchemaName",
+								"type": "Expression"
+							},
+							"TableName": {
+								"value": "@pipeline().parameters.stgTableName",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Lookup WaterMark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[xellia_poc].[getWaterMarkByDouble]",
+						"storedProcedureParameters": {
+							"schemaName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.baseSchemaName",
+									"type": "Expression"
+								}
+							},
+							"tableName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.baseTableName",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Watermark",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Copy All Keys From Src",
+				"description": "WorkAround for onpremise data, because we cannot use self-hosted integration runtime in dataflows",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set PrimaryKey Var",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "select @{replace(replace(replace(replace(string(variables('srcPrimaryKey')),'\"',''),'[',''),']',''),'\\','')} from @{pipeline().parameters.srcSchemaName}.@{pipeline().parameters.srcTableName} ",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "staging"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "F0006",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "JsonDeletedKeys",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "staging",
+							"folder": "JDEE1_DeletedKeys",
+							"file": {
+								"value": "@{pipeline().parameters.srcTableName}.json",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Lookup Max LastUpdate",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Copy To Stage",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SnowflakeSource",
+						"query": {
+							"value": "select MAX(@{variables('lastModifiedDateColumn')}) as lastLoad from @{pipeline().parameters.stgSchemaName}.@{pipeline().parameters.stgTableName}",
+							"type": "Expression"
+						},
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
+						}
+					},
+					"dataset": {
+						"referenceName": "SnowFlakeDataset_JDEE1",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": {
+								"value": "@pipeline().parameters.stgSchemaName",
+								"type": "Expression"
+							},
+							"TableName": {
+								"value": "@pipeline().parameters.stgTableName",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "Updating Base Table",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Copy To Stage",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy All Keys From Src",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "JDEE1_Generic_DataFlow_Both",
+						"type": "DataFlowReference",
+						"parameters": {
+							"primaryKeys": {
+								"value": "@variables('srcPrimaryKey')",
+								"type": "Expression"
+							},
+							"srcTableName": {
+								"value": "'@{pipeline().parameters.srcTableName}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"StageTable": {
+								"SchemaName": {
+									"value": "@pipeline().parameters.stgSchemaName",
+									"type": "Expression"
+								},
+								"TableName": {
+									"value": "@pipeline().parameters.stgTableName",
+									"type": "Expression"
+								}
+							},
+							"ExistingBaseTable": {
+								"SchemaName": {
+									"value": "@pipeline().parameters.baseSchemaName",
+									"type": "Expression"
+								},
+								"TableName": {
+									"value": "@pipeline().parameters.baseTableName",
+									"type": "Expression"
+								}
+							},
+							"BaseTable": {
+								"SchemaName": {
+									"value": "@pipeline().parameters.baseSchemaName",
+									"type": "Expression"
+								},
+								"TableName": {
+									"value": "@pipeline().parameters.baseTableName",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "ca326670-0934-4ddf-8250-2996c27a7995"
+					}
+				}
+			},
+			{
+				"name": "Update WaterMark",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Updating Base Table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Lookup Max LastUpdate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[xellia_poc].[UpdateWatermarkByDouble]",
+					"storedProcedureParameters": {
+						"lastLoad": {
+							"value": {
+								"value": "@activity('Lookup Max LastUpdate').output.firstRow.LASTLOAD\n",
+								"type": "Expression"
+							},
+							"type": "Double"
+						},
+						"schemaName": {
+							"value": {
+								"value": "@pipeline().parameters.baseSchemaName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"tableName": {
+							"value": {
+								"value": "@pipeline().parameters.baseTableName",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "JeffreySqlDb",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Lookup PrimaryKeys",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[xellia_poc].[sp_getPrimaryKeys]",
+						"storedProcedureParameters": {
+							"schema_name": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.baseSchemaName",
+									"type": "Expression"
+								}
+							},
+							"table_name": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.baseTableName",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Watermark",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "Set PrimaryKey Var",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup PrimaryKeys",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "srcPrimaryKey",
+					"value": {
+						"value": "@split(activity('Lookup PrimaryKeys').output.firstRow.primaryKeys,',')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Lookup LastUpdate Column",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[xellia_poc].[sp_getLastUpdateColumn]",
+						"storedProcedureParameters": {
+							"schema_name": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.baseSchemaName",
+									"type": "Expression"
+								}
+							},
+							"table_name": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.baseTableName",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Watermark",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "Set LastUpdate Column Var",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup LastUpdate Column",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "lastModifiedDateColumn",
+					"value": {
+						"value": "@activity('Lookup LastUpdate Column').output.firstRow.LastUpdate_column",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"srcSchemaName": {
+				"type": "string",
+				"defaultValue": "PRODDTA"
+			},
+			"stgSchemaName": {
+				"type": "string",
+				"defaultValue": "STG_JDEE1"
+			},
+			"srcTableName": {
+				"type": "string",
+				"defaultValue": "F4104"
+			},
+			"stgTableName": {
+				"type": "string",
+				"defaultValue": "F4104"
+			},
+			"baseSchemaName": {
+				"type": "string",
+				"defaultValue": "SRC_JDEE1"
+			},
+			"baseTableName": {
+				"type": "string",
+				"defaultValue": "F4104_2"
+			}
+		},
+		"variables": {
+			"srcPrimaryKey": {
+				"type": "Array",
+				"defaultValue": [
+					"IVXRT",
+					"IVAN8",
+					"IVCIRV",
+					"IVCITM",
+					"IVEXDJ",
+					"IVITM"
+				]
+			},
+			"lastModifiedDateColumn": {
+				"type": "String",
+				"defaultValue": "IVUPMJ"
+			}
+		},
+		"folder": {
+			"name": "JD Edwards/Extraction"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-03-30T19:33:45Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

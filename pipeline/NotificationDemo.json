@@ -1,0 +1,198 @@
+{
+	"name": "NotificationDemo",
+	"properties": {
+		"description": "GO to powerbi_Test channel to showcase",
+		"activities": [
+			{
+				"name": "Call Teams Notification Pipeline",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CopyDataWrongFile",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send notification to a channel in Microsoft Teams1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipelineRunId": {
+							"value": "@pipeline().RunId",
+							"type": "Expression"
+						},
+						"activityName": "Demo1: Copy File that DO NOT exists",
+						"activityMessage": {
+							"value": "@activity('CopyDataWrongFile').output.errors[0].Message",
+							"type": "Expression"
+						},
+						"activityDuration": {
+							"value": "@activity('CopyDataWrongFile').output.copyDuration",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "CopyDataWrongFile",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "JsonDeletedKeys",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "staging",
+							"folder": "notificationTest",
+							"file": "NoExistFile.txt"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "JsonDeletedKeys",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "staging",
+							"folder": "notificationTest",
+							"file": "tst2.txt"
+						}
+					}
+				]
+			},
+			{
+				"name": "Call Teams Notification Pipeline_copy1",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CopyData1_OK",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send notification to a channel in Microsoft Teams1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipelineRunId": {
+							"value": "@pipeline().RunId",
+							"type": "Expression"
+						},
+						"activityName": "Demo1: Copy File that exists",
+						"activityMessage": "The Flow Finalized With Success!!!!!!!!!!",
+						"activityDuration": {
+							"value": "@activity('CopyData1_OK').output.copyDuration",
+							"type": "Expression"
+						},
+						"activityStatus": "Sucess"
+					}
+				}
+			},
+			{
+				"name": "CopyData1_OK",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "JsonDeletedKeys",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "staging",
+							"folder": "notificationTest",
+							"file": "tst.txt"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "JsonDeletedKeys",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "staging",
+							"folder": "notificationTest",
+							"file": "tst2.txt"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Utility"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-03-30T19:30:47Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

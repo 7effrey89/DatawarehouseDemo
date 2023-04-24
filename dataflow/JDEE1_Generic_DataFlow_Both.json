@@ -1,0 +1,151 @@
+{
+	"name": "JDEE1_Generic_DataFlow_Both",
+	"properties": {
+		"folder": {
+			"name": "JDEE1/Extraction"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SnowFlakeDataset_JDEE1",
+						"type": "DatasetReference"
+					},
+					"name": "StageTable"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureDataLakeStorage2",
+						"type": "LinkedServiceReference"
+					},
+					"name": "AllPKeyFromSystem",
+					"description": "Note: Schema for column datatype is overwritten to ensure it's the same type as in snowflake when NoExists are comparing the value against each other."
+				},
+				{
+					"dataset": {
+						"referenceName": "SnowFlakeDataset_SrcTable",
+						"type": "DatasetReference"
+					},
+					"name": "ExistingBaseTable"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SnowFlakeDataset_SrcTable",
+						"type": "DatasetReference"
+					},
+					"name": "BaseTable"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Update"
+				},
+				{
+					"name": "FlagDeletedRows"
+				},
+				{
+					"name": "FindDeletedRows"
+				},
+				{
+					"name": "MarkUpsertRows"
+				},
+				{
+					"name": "Upsert"
+				},
+				{
+					"name": "HashExistingKeys"
+				},
+				{
+					"name": "HashAllKeys"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "DropHashColumn"
+				},
+				{
+					"name": "HashStagingKeys"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     primaryKeys as string[],",
+				"     srcTableName as string",
+				"}",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     enableCdc: true,",
+				"     mode: 'read',",
+				"     format: 'table',",
+				"     fileSystem: 'bronze',",
+				"     folderPath: 'SapSuccessFactor/USER') ~> StageTable",
+				"source(output(",
+				"          IMITM as decimal(8,0)",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     modifiedAfter: (toTimestamp(1679961600000L)),",
+				"     format: 'json',",
+				"     fileSystem: 'staging',",
+				"     folderPath: 'JDEE1_DeletedKeys',",
+				"     fileName: (concat($srcTableName,'.json')),",
+				"     documentForm: 'documentPerLine') ~> AllPKeyFromSystem",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> ExistingBaseTable",
+				"DropHashColumn alterRow(updateIf(true())) ~> Update",
+				"FindDeletedRows derive(SRC_DELETED_FLG = \"Y\",",
+				"          LAST_UPDATED_TS = currentUTC()) ~> FlagDeletedRows",
+				"HashExistingKeys, HashAllKeys exists(HashAllKeys@pkey_hash == HashExistingKeys@pkey_hash,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> FindDeletedRows",
+				"join1 derive(SRC_DELETED_FLG = \"N\",",
+				"          LAST_UPDATED_TS = currentUTC()) ~> MarkUpsertRows",
+				"MarkUpsertRows alterRow(updateIf(HashStagingKeys@pkey_hash==HashExistingKeys@pkey_hash),",
+				"     insertIf(HashStagingKeys@pkey_hash!=HashExistingKeys@pkey_hash)) ~> Upsert",
+				"ExistingBaseTable derive(pkey_hash = md5(byNames($primaryKeys,'ExistingBaseTable'))) ~> HashExistingKeys",
+				"AllPKeyFromSystem derive(pkey_hash = md5(byNames($primaryKeys,'AllPKeyFromSystem'))) ~> HashAllKeys",
+				"select1, Update union(byName: true)~> union1",
+				"FlagDeletedRows select(mapColumn(",
+				"          each(match(!in(['pkey_hash'],name)))",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> DropHashColumn",
+				"StageTable derive(pkey_hash = md5(byNames($primaryKeys,'StageTable'))) ~> HashStagingKeys",
+				"HashStagingKeys, HashExistingKeys join(HashStagingKeys@pkey_hash == HashExistingKeys@pkey_hash,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"Upsert select(mapColumn(",
+				"          each(match(!in(['pkey_hash'],name)))",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:true,",
+				"     keys:($primaryKeys),",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true) ~> BaseTable"
+			]
+		}
+	}
+}

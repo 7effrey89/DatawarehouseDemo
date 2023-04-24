@@ -1,0 +1,167 @@
+{
+	"name": "DimensionLoading",
+	"properties": {
+		"folder": {
+			"name": "Utility"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SnowFlakeDataset_dimFctTable",
+						"type": "DatasetReference"
+					},
+					"name": "StageTable"
+				},
+				{
+					"dataset": {
+						"referenceName": "SnowFlakeDataset_dimFctTable",
+						"type": "DatasetReference"
+					},
+					"name": "ExistingEdw"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SnowFlakeDataset_dimFctTable",
+						"type": "DatasetReference"
+					},
+					"name": "edwDimension"
+				}
+			],
+			"transformations": [
+				{
+					"name": "MarkAsUpdate"
+				},
+				{
+					"name": "UpdateObsolete"
+				},
+				{
+					"name": "FilterForUpdatedValues"
+				},
+				{
+					"name": "AddDimensionColumns"
+				},
+				{
+					"name": "MarkAsInsert"
+				},
+				{
+					"name": "HashExistingKeys"
+				},
+				{
+					"name": "HashAllKeys"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "NewAndUpdatedRows"
+				},
+				{
+					"name": "FilterForActive"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "AddDimensionColumns2"
+				},
+				{
+					"name": "MarkAsUpdate1"
+				},
+				{
+					"name": "RemoveUneededColumns"
+				},
+				{
+					"name": "RemoveUneededColumns1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     primaryKeys as string[] ([\"SHORTITEMID\"]),",
+				"     ColumnsToHash as string[] ([\"PRODUCTID\",\"SHORTITEMID\",\"PRODUCT\",\"SECONDPRODUCT\",\"SEARCHTEXT\",\"ISACTIVE\",\"STOCKTYPE\",\"UOMPRIMARYID\",\"UOMSECONDARYID\",\"MANUFACTURINGFAMILYUOMID\",\"GLCLASS\",\"DISPATCHGROUPID\",\"PRODUCTTYPEID\",\"PRODUCTTYPE\",\"STRATEGICCATEGORY\",\"ISSTERILE\",\"COMMODITYCLASSID\",\"COMMODITYCLASS\",\"ACTIVEINGREDIENTID\",\"ACTIVEINGREDIENT\",\"MANUFACTURINGFAMILYID\",\"MANUFACTURINGFAMILY\",\"QUALITYGROUPID\",\"QUALITYGROUP\",\"MASTERPLANNINGFAMILYID\",\"MASTERPLANNINGFAMILY\",\"PRODUCTFILTER\",\"QUALITYGROUPFILTER\",\"STOCKINGTYPEFILTER\",\"COMMODITYCLASSFILTER\",\"ACTUALSFILTER\",\"PLANNINGFILTER\"])",
+				"}",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     enableCdc: true,",
+				"     mode: 'read',",
+				"     format: 'table',",
+				"     fileSystem: 'bronze',",
+				"     folderPath: 'SapSuccessFactor/USER') ~> StageTable",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> ExistingEdw",
+				"RemoveUneededColumns1 alterRow(updateIf(true())) ~> MarkAsUpdate",
+				"FilterForUpdatedValues derive(ACTIVE_IND = \"N\",",
+				"          EFFECTIVE_END_DATE = currentUTC(),",
+				"          EFFECTIVE_START_DATE = toTimestamp(byName('EFFECTIVE_START_DATE')),",
+				"          UPDATED_BY = \"adf-etl-dev-001\",",
+				"          UPDATED_DATETIME = currentUTC(),",
+				"          CREATED_BY = toString(byName('CREATED_BY')),",
+				"          CREATED_DATETIME = toTimestamp(byName('CREATED_DATETIME'))) ~> UpdateObsolete",
+				"HashExistingKeys, NewAndUpdatedRows exists(HashAllKeys@pkey_hash == HashExistingKeys@pkey_hash,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> FilterForUpdatedValues",
+				"NewAndUpdatedRows derive(EFFECTIVE_START_DATE = currentUTC(),",
+				"          EFFECTIVE_END_DATE = toTimestamp('3000-01-01 00:00:00'),",
+				"          ACTIVE_IND = \"Y\",",
+				"          UPDATED_BY = \"adf-etl-dev-001\",",
+				"          CREATED_BY = \"adf-etl-dev-001\",",
+				"          CREATED_DATETIME = currentUTC(),",
+				"          UPDATED_DATETIME = currentUTC()) ~> AddDimensionColumns",
+				"RemoveUneededColumns alterRow(insertIf(true())) ~> MarkAsInsert",
+				"FilterForActive derive(pkey_hash = md5(byNames($primaryKeys)),",
+				"          column_hash = md5(byNames($ColumnsToHash))) ~> HashExistingKeys",
+				"split1@Update derive(pkey_hash = md5(byNames($primaryKeys)),",
+				"          column_hash = md5(byNames($ColumnsToHash))) ~> HashAllKeys",
+				"MarkAsInsert, MarkAsUpdate, MarkAsUpdate1 union(byName: true)~> union1",
+				"HashAllKeys, HashExistingKeys exists(HashAllKeys@pkey_hash == HashExistingKeys@pkey_hash &&",
+				"HashAllKeys@column_hash == HashExistingKeys@column_hash,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> NewAndUpdatedRows",
+				"ExistingEdw filter(toString(byName('ACTIVE_IND')) == \"Y\") ~> FilterForActive",
+				"StageTable split(toString(byName(\"SRC_DELETED_FLG\", \"StageTable\")) == \"Y\",",
+				"     disjoint: false) ~> split1@(Deleted, Update)",
+				"split1@Deleted derive(ACTIVE_IND = \"N\",",
+				"          EFFECTIVE_START_DATE = currentUTC(),",
+				"          EFFECTIVE_END_DATE = currentUTC(),",
+				"          UPDATED_DATETIME = currentUTC(),",
+				"          UPDATED_BY = \"adf-etl-dev-001\",",
+				"          CREATED_BY = \"adf-etl-dev-001\",",
+				"          CREATED_DATETIME = currentUTC()) ~> AddDimensionColumns2",
+				"AddDimensionColumns2 alterRow(updateIf(true())) ~> MarkAsUpdate1",
+				"AddDimensionColumns select(mapColumn(",
+				"          each(match(!in(['pkey_hash','column_hash'],name)))",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveUneededColumns",
+				"UpdateObsolete select(mapColumn(",
+				"          each(match(!in(['pkey_hash','column_hash'],name)||left(name,6)!='SK_DIM'))",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveUneededColumns1",
+				"union1 select(mapColumn(",
+				"          each(match(left(name,6)!='SK_DIM'&&!in(['pkey_hash','column_hash'],name)))",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:true,",
+				"     keys:($primaryKeys),",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true) ~> edwDimension"
+			]
+		}
+	}
+}

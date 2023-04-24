@@ -1,0 +1,26 @@
+{
+	"name": "FileF0006",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NetworkSharedLocation",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Files"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "FileServerLocation",
+				"fileName": "F0006.csv"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

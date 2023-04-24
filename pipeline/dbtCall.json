@@ -1,0 +1,31 @@
+{
+	"name": "dbtCall",
+	"properties": {
+		"activities": [
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://emea.dbt.com/api/v2/accounts/116/jobs/4389/run/",
+					"method": "POST",
+					"headers": {
+						"Authorization": "Token 3db5feef3cbe99d2c53506c438a530a34eb732ae"
+					},
+					"body": {
+						"cause": "Triggered via API"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}

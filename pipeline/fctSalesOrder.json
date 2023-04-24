@@ -1,0 +1,103 @@
+{
+	"name": "fctSalesOrder",
+	"properties": {
+		"activities": [
+			{
+				"name": "Staging factSalesorder",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "fctSalesOrder",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"dimProduct": {
+								"SchemaName": "EDW",
+								"TableName": "DIMPRODUCT"
+							},
+							"dimCustomer": {
+								"SchemaName": "EDW",
+								"TableName": "DIMCUSTOMER"
+							},
+							"vSalesOrderDetailFile": {
+								"SchemaName": "SRC_JDEE1",
+								"TableName": "VSALESORDERDETAILFILE"
+							},
+							"fctSALESORDER": {
+								"SchemaName": "INT",
+								"TableName": "TMP_FACTSALESORDER"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "EDW FactSalesOrder",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Staging factSalesorder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "FactLoading",
+						"type": "DataFlowReference",
+						"parameters": {
+							"primaryKeys": {
+								"value": "[\"SALESORDERID\",\"SALESORDERLINEID\"]",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"StageTable": {
+								"SchemaName": "INT",
+								"TableName": "TMP_FACTSALESORDER"
+							},
+							"edwFact": {
+								"SchemaName": "EDW",
+								"TableName": "FACTSALESORDER"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "edfec791-9b21-469a-b5a7-bd1357a2f06b"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "JD Edwards/Facts"
+		},
+		"annotations": []
+	}
+}

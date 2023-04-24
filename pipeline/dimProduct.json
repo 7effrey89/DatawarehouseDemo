@@ -1,0 +1,333 @@
+{
+	"name": "dimProduct",
+	"properties": {
+		"activities": [
+			{
+				"name": "Staging dimProduct",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Lookup WaterMark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dimProduct",
+						"type": "DataFlowReference",
+						"parameters": {
+							"lastLoad": {
+								"value": "'@{formatDateTime(activity('Lookup WaterMark').output.firstRow.lastLoad, 'yyyy-MM-dd hh:mm:ss')}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"ITEMMASTER": {
+								"SchemaName": "SRC_JDEE1",
+								"TableName": "VITEMMASTER"
+							},
+							"USERDEFINEDCODEVALUES": {
+								"SchemaName": "SRC_JDEE1",
+								"TableName": "VUSERDEFINEDCODEVALUES"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Lookup WaterMark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[xellia_poc].[getWaterMarkByDateTime]",
+						"storedProcedureParameters": {
+							"schemaName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.dimSchemaName",
+									"type": "Expression"
+								}
+							},
+							"tableName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.dimTableName",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Watermark",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Update WaterMark",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Lookup Max LastUpdate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[xellia_poc].[UpdateWatermarkByDateTime]",
+					"storedProcedureParameters": {
+						"lastLoad": {
+							"value": {
+								"value": "@activity('Lookup Max LastUpdate').output.firstRow.LASTLOAD\n",
+								"type": "Expression"
+							},
+							"type": "Datetime"
+						},
+						"schemaName": {
+							"value": {
+								"value": "@pipeline().parameters.dimSchemaName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"tableName": {
+							"value": {
+								"value": "@pipeline().parameters.dimTableName",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "JeffreySqlDb",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Lookup Max LastUpdate",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "EDW dimProduct",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SnowflakeSource",
+						"query": {
+							"value": "select MAX(LAST_UPDATED_TS) as lastLoad from @{pipeline().parameters.dimSchemaName}.@{pipeline().parameters.dimTableName}",
+							"type": "Expression"
+						},
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
+						}
+					},
+					"dataset": {
+						"referenceName": "SnowFlakeDataset_dimFctTable",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": {
+								"value": "@pipeline().parameters.dimSchemaName",
+								"type": "Expression"
+							},
+							"TableName": {
+								"value": "@pipeline().parameters.dimTableName",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "EDW dimProduct",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Staging dimProduct",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DimensionLoading",
+						"type": "DataFlowReference",
+						"parameters": {
+							"primaryKeys": {
+								"value": "@pipeline().parameters.primaryKey",
+								"type": "Expression"
+							},
+							"ColumnsToHash": {
+								"value": "@pipeline().parameters.ColumnsToHash",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"StageTable": {
+								"SchemaName": {
+									"value": "@pipeline().parameters.stgSchemaName",
+									"type": "Expression"
+								},
+								"TableName": {
+									"value": "@pipeline().parameters.stgTableName",
+									"type": "Expression"
+								}
+							},
+							"ExistingEdw": {
+								"SchemaName": {
+									"value": "@pipeline().parameters.dimSchemaName",
+									"type": "Expression"
+								},
+								"TableName": {
+									"value": "@pipeline().parameters.dimTableName",
+									"type": "Expression"
+								}
+							},
+							"edwDimension": {
+								"SchemaName": {
+									"value": "@pipeline().parameters.dimSchemaName",
+									"type": "Expression"
+								},
+								"TableName": {
+									"value": "@pipeline().parameters.dimTableName",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "33b13fab-baf1-4786-813a-6c922a796093"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"dimTableName": {
+				"type": "string",
+				"defaultValue": "DIMPRODUCT"
+			},
+			"dimSchemaName": {
+				"type": "string",
+				"defaultValue": "EDW"
+			},
+			"primaryKey": {
+				"type": "array",
+				"defaultValue": [
+					"SHORTITEMID"
+				]
+			},
+			"stgTableName": {
+				"type": "string",
+				"defaultValue": "TMP_DIMPRODUCT"
+			},
+			"stgSchemaName": {
+				"type": "string",
+				"defaultValue": "INT"
+			},
+			"ColumnsToHash": {
+				"type": "array",
+				"defaultValue": [
+					"PRODUCTID",
+					"SHORTITEMID",
+					"PRODUCT",
+					"SECONDPRODUCT",
+					"SEARCHTEXT",
+					"ISACTIVE",
+					"STOCKTYPE",
+					"UOMPRIMARYID",
+					"UOMSECONDARYID",
+					"MANUFACTURINGFAMILYUOMID",
+					"GLCLASS",
+					"DISPATCHGROUPID",
+					"PRODUCTTYPEID",
+					"PRODUCTTYPE",
+					"STRATEGICCATEGORY",
+					"",
+					"ISSTERILE",
+					"COMMODITYCLASSID",
+					"COMMODITYCLASS",
+					"ACTIVEINGREDIENTID",
+					"ACTIVEINGREDIENT",
+					"MANUFACTURINGFAMILYID",
+					"MANUFACTURINGFAMILY",
+					"QUALITYGROUPID",
+					"QUALITYGROUP",
+					"MASTERPLANNINGFAMILYID",
+					"MASTERPLANNINGFAMILY",
+					"PRODUCTFILTER",
+					"QUALITYGROUPFILTER",
+					"STOCKINGTYPEFILTER",
+					"COMMODITYCLASSFILTER",
+					"ACTUALSFILTER",
+					"PLANNINGFILTER"
+				]
+			}
+		},
+		"folder": {
+			"name": "JD Edwards/Dimensions"
+		},
+		"annotations": []
+	}
+}

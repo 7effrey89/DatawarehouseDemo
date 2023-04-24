@@ -1,0 +1,105 @@
+{
+	"name": "Email LogicApp",
+	"properties": {
+		"activities": [
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "CopyData1_OK",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-01.germanywestcentral.logic.azure.com:443/workflows/80af8634a43247118209f0808e13a6a3/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-LoWvkvPiZBmRDx2SxLU5sWWAIdrsZLJSgOvfPu98qI",
+					"method": "POST",
+					"body": {
+						"message": "Success - This is a custom dynamic message from your pipeline with run ID @{pipeline().RunId}.",
+						"dataFactoryName": "@{pipeline().DataFactory}",
+						"pipelineName": "@{pipeline().Pipeline}",
+						"receiver": "@{pipeline().parameters.receiver}"
+					}
+				}
+			},
+			{
+				"name": "CopyData1_OK",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "JsonDeletedKeys",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "staging",
+							"folder": "notificationTest",
+							"file": "tst.txt"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "JsonDeletedKeys",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "staging",
+							"folder": "notificationTest",
+							"file": "tst2.txt"
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"receiver": {
+				"type": "string",
+				"defaultValue": "jeffreylai@microsoft.com"
+			}
+		},
+		"folder": {
+			"name": "Utility"
+		},
+		"annotations": []
+	}
+}

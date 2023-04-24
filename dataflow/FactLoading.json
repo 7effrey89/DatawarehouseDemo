@@ -1,0 +1,61 @@
+{
+	"name": "FactLoading",
+	"properties": {
+		"folder": {
+			"name": "Utility"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SnowFlakeDataset_dimFctTable",
+						"type": "DatasetReference"
+					},
+					"name": "StageTable"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SnowFlakeDataset_dimFctTable",
+						"type": "DatasetReference"
+					},
+					"name": "edwFact"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AddFactColumns"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     primaryKeys as string[] ([\"SHORTITEMID\"])",
+				"}",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     enableCdc: true,",
+				"     mode: 'read',",
+				"     format: 'table',",
+				"     fileSystem: 'bronze',",
+				"     folderPath: 'SapSuccessFactor/USER') ~> StageTable",
+				"StageTable derive(UPDATED_BY = \"adf-etl-dev-001\",",
+				"          CREATED_BY = \"adf-etl-dev-001\",",
+				"          CREATED_DATETIME = currentUTC(),",
+				"          UPDATED_DATETIME = currentUTC()) ~> AddFactColumns",
+				"AddFactColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true) ~> edwFact"
+			]
+		}
+	}
+}
