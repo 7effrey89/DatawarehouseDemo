@@ -45,16 +45,16 @@
 										"value": "@item().srcTableName",
 										"type": "Expression"
 									},
-									"BronzeTableName": {
-										"value": "@item().BronzeTableName",
+									"stgTableName": {
+										"value": "@item().stgTableName",
 										"type": "Expression"
 									},
 									"baseSchemaName": {
 										"value": "@item().baseSchemaName",
 										"type": "Expression"
 									},
-									"GoldTableName": {
-										"value": "@item().GoldTableName",
+									"baseTableName": {
+										"value": "@item().baseTableName",
 										"type": "Expression"
 									}
 								}

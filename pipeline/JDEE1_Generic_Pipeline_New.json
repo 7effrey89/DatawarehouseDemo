@@ -97,7 +97,7 @@
 							"tableName": {
 								"type": "String",
 								"value": {
-									"value": "@pipeline().parameters.GoldTableName",
+									"value": "@pipeline().parameters.baseTableName",
 									"type": "Expression"
 								}
 							}
@@ -267,7 +267,7 @@
 						},
 						"tableName": {
 							"value": {
-								"value": "@pipeline().parameters.GoldTableName",
+								"value": "@pipeline().parameters.baseTableName",
 								"type": "Expression"
 							},
 							"type": "String"
@@ -306,7 +306,7 @@
 							"table_name": {
 								"type": "String",
 								"value": {
-									"value": "@pipeline().parameters.GoldTableName",
+									"value": "@pipeline().parameters.baseTableName",
 									"type": "Expression"
 								}
 							}
@@ -368,7 +368,7 @@
 							"table_name": {
 								"type": "String",
 								"value": {
-									"value": "@pipeline().parameters.GoldTableName",
+									"value": "@pipeline().parameters.baseTableName",
 									"type": "Expression"
 								}
 							}
@@ -452,7 +452,7 @@
 				"type": "string",
 				"defaultValue": "F4104"
 			},
-			"BronzeTableName": {
+			"stgTableName": {
 				"type": "string",
 				"defaultValue": "F4104"
 			},
@@ -460,7 +460,7 @@
 				"type": "string",
 				"defaultValue": "SRC_JDEE1"
 			},
-			"GoldTableName": {
+			"baseTableName": {
 				"type": "string",
 				"defaultValue": "F4104_2"
 			}
