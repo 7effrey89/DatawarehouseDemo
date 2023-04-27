@@ -78,7 +78,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select*from xellia_poc.watermark where isEnabled=1 AND srcSystem='JDEE1'  AND destinationDB = 'DEV_ADF_RL_DB'\n",
+						"sqlReaderQuery": "select*from dbo.watermark where isEnabled=1 AND srcSystem='JDEE1'  AND destinationDB = 'Sandbox'\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
