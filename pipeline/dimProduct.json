@@ -33,12 +33,12 @@
 						},
 						"datasetParameters": {
 							"ITEMMASTER": {
-								"SchemaName": "SRC_JDEE1",
-								"TableName": "VITEMMASTER"
+								"TableName": "VITEMMASTER",
+								"SchemaName": "SRC_JDEE1"
 							},
 							"USERDEFINEDCODEVALUES": {
-								"SchemaName": "SRC_JDEE1",
-								"TableName": "VUSERDEFINEDCODEVALUES"
+								"TableName": "VUSERDEFINEDCODEVALUES",
+								"SchemaName": "SRC_JDEE1"
 							}
 						}
 					},
@@ -169,20 +169,6 @@
 						"exportSettings": {
 							"type": "SnowflakeExportCopyCommand"
 						}
-					},
-					"dataset": {
-						"referenceName": "SnowFlakeDataset_dimFctTable",
-						"type": "DatasetReference",
-						"parameters": {
-							"SchemaName": {
-								"value": "@pipeline().parameters.dimSchemaName",
-								"type": "Expression"
-							},
-							"TableName": {
-								"value": "@pipeline().parameters.dimTableName",
-								"type": "Expression"
-							}
-						}
 					}
 				}
 			},
@@ -217,38 +203,6 @@
 							"ColumnsToHash": {
 								"value": "@pipeline().parameters.ColumnsToHash",
 								"type": "Expression"
-							}
-						},
-						"datasetParameters": {
-							"StageTable": {
-								"SchemaName": {
-									"value": "@pipeline().parameters.stgSchemaName",
-									"type": "Expression"
-								},
-								"TableName": {
-									"value": "@pipeline().parameters.stgTableName",
-									"type": "Expression"
-								}
-							},
-							"ExistingEdw": {
-								"SchemaName": {
-									"value": "@pipeline().parameters.dimSchemaName",
-									"type": "Expression"
-								},
-								"TableName": {
-									"value": "@pipeline().parameters.dimTableName",
-									"type": "Expression"
-								}
-							},
-							"edwDimension": {
-								"SchemaName": {
-									"value": "@pipeline().parameters.dimSchemaName",
-									"type": "Expression"
-								},
-								"TableName": {
-									"value": "@pipeline().parameters.dimTableName",
-									"type": "Expression"
-								}
 							}
 						}
 					},

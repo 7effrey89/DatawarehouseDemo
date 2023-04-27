@@ -9,14 +9,14 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "SnowFlakeDataset_SrcTable",
+						"referenceName": "AzureTable1",
 						"type": "DatasetReference"
 					},
 					"name": "ITEMMASTER"
 				},
 				{
 					"dataset": {
-						"referenceName": "SnowFlakeDataset_SrcTable",
+						"referenceName": "AzureTable1",
 						"type": "DatasetReference"
 					},
 					"name": "USERDEFINEDCODEVALUES"
@@ -24,10 +24,6 @@
 			],
 			"sinks": [
 				{
-					"linkedService": {
-						"referenceName": "SnowflakeDimensionFact",
-						"type": "LinkedServiceReference"
-					},
 					"name": "tmpDIMPRODUCT"
 				}
 			],
@@ -329,33 +325,12 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     query: (\"SELECT * FROM SRC_JDEE1.VITEMMASTER WHERE LAST_UPDATED_TS > TO_TIMESTAMP( '{$lastLoad}')\"),",
 				"     format: 'query') ~> ITEMMASTER",
-				"source(output(",
-				"          {__IQ4BIS_PARTITIONKEY} as string,",
-				"          USERDEFINEDCODES as string,",
-				"          USERDEFINEDCODE as string,",
-				"          DESCRIPTION001 as string,",
-				"          DESCRIPTION01002 as string,",
-				"          SPECIALHANDLINGCODE as string,",
-				"          UDCOWNERSHIPFLAG as string,",
-				"          HARDCODEDYN as string,",
-				"          USERID as string,",
-				"          PROGRAMID as string,",
-				"          DATEUPDATED as decimal(18,0),",
-				"          WORKSTATIONID as string,",
-				"          TIMELASTUPDATED as string,",
-				"          PRODUCTCODE as string,",
-				"          PRODUCTCODE_TRIM as string,",
-				"          USERDEFINEDCODE_TRIM as string,",
-				"          USERDEFINEDCODES_TRIM as string,",
-				"          DATEUPDATED_DATE as timestamp,",
-				"          DATEUPDATED_YM as decimal(38,0),",
-				"          SRC_DELETED_FLG as string,",
-				"          LAST_UPDATED_TS as timestamp",
-				"     ),",
-				"     allowSchemaDrift: true,",
+				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> USERDEFINEDCODEVALUES",
 				"filter1, U07 join(SALESREPORTINGCODE7 == USERDEFINEDCODES,",
 				"     joinType:'left',",
@@ -451,8 +426,8 @@
 				"          COMMODITYCLASSFILTER,",
 				"          ACTUALSFILTER,",
 				"          PLANNINGFILTER,",
-				"          LAST_UPDATED_TS = SelectRelevantColumns@LAST_UPDATED_TS,",
-				"          SRC_DELETED_FLG = SelectRelevantColumns@SRC_DELETED_FLG",
+				"          LAST_UPDATED_TS,",
+				"          SRC_DELETED_FLG",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> renaming",
@@ -468,18 +443,12 @@
 				"UserDefinedCodes10 filter(PRODUCTCODE==\"41\" && USERDEFINEDCODES ==\"P4\") ~> U10",
 				"renaming sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'table',",
-				"     tableName: 'TMP_DIMPRODUCT',",
-				"     schemaName: 'INT',",
-				"     deletable: false,",
-				"     insertable: true,",
-				"     updateable: false,",
-				"     upsertable: false,",
 				"     truncate: true,",
-				"     store: 'snowflake',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     stageInsert: true) ~> tmpDIMPRODUCT"
+				"     format: 'table',",
+				"     schemaName: 'INT',",
+				"     store: 'snowflake') ~> tmpDIMPRODUCT"
 			]
 		}
 	}

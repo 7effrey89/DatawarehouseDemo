@@ -20,20 +20,16 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"dimProduct": {
-								"SchemaName": "EDW",
-								"TableName": "DIMPRODUCT"
+								"TableName": "DIMPRODUCT",
+								"SchemaName": "EDW"
 							},
 							"dimCustomer": {
-								"SchemaName": "EDW",
-								"TableName": "DIMCUSTOMER"
+								"TableName": "DIMCUSTOMER",
+								"SchemaName": "EDW"
 							},
 							"vSalesOrderDetailFile": {
-								"SchemaName": "SRC_JDEE1",
-								"TableName": "VSALESORDERDETAILFILE"
-							},
-							"fctSALESORDER": {
-								"SchemaName": "INT",
-								"TableName": "TMP_FACTSALESORDER"
+								"TableName": "VSALESORDERDETAILFILE",
+								"SchemaName": "SRC_JDEE1"
 							}
 						}
 					},

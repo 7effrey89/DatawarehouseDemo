@@ -27,16 +27,16 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"vADDRESSBOOKMASTER": {
-								"SchemaName": "SRC_JDEE",
-								"TableName": "VADDRESSBOOKMASTER"
+								"TableName": "VADDRESSBOOKMASTER",
+								"SchemaName": "SRC_JDEE"
 							},
 							"tmpDimCustomer": {
-								"SchemaName": {
-									"value": "@pipeline().parameters.stgSchemaName",
-									"type": "Expression"
-								},
 								"TableName": {
 									"value": "@pipeline().parameters.stgTableName",
+									"type": "Expression"
+								},
+								"SchemaName": {
+									"value": "@pipeline().parameters.stgSchemaName",
 									"type": "Expression"
 								}
 							}
@@ -168,20 +168,6 @@
 						},
 						"exportSettings": {
 							"type": "SnowflakeExportCopyCommand"
-						}
-					},
-					"dataset": {
-						"referenceName": "SnowFlakeDataset_dimFctTable",
-						"type": "DatasetReference",
-						"parameters": {
-							"SchemaName": {
-								"value": "@pipeline().parameters.dimSchemaName",
-								"type": "Expression"
-							},
-							"TableName": {
-								"value": "@pipeline().parameters.dimTableName",
-								"type": "Expression"
-							}
 						}
 					}
 				}
