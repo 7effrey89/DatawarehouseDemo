@@ -226,7 +226,7 @@
 									"type": "Expression"
 								},
 								"TableName": {
-									"value": "@pipeline().parameters.stgTableName",
+									"value": "@pipeline().parameters.BronzeTableName",
 									"type": "Expression"
 								}
 							},
@@ -278,7 +278,7 @@
 					"SHORTITEMID"
 				]
 			},
-			"stgTableName": {
+			"BronzeTableName": {
 				"type": "string",
 				"defaultValue": "TMP_DIMPRODUCT"
 			},
