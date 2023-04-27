@@ -27,7 +27,7 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "xellia_poc",
+			"schema": "dbo",
 			"table": "watermark"
 		}
 	},
