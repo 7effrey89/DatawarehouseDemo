@@ -17,6 +17,12 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Current UTC",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"policy": {
@@ -29,53 +35,43 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "SqlServerSource",
+						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "select * from @{pipeline().parameters.srcSchemaName}.@{pipeline().parameters.srcTableName} WHERE @{variables('lastModifiedDateColumn')}>'@{replace(string(activity('Lookup WaterMark').output.firstRow.lastLoad),'\"','')}'",
+							"value": "select * from @{pipeline().parameters.srcSchemaName}.@{pipeline().parameters.srcTableName} WHERE @{variables('lastModifiedDateColumn')}>'@{replace(string(activity('Lookup WaterMark').output.firstRow.lastLoad),'\"','')}' AND @{variables('lastModifiedDateColumn')}<='@{variables('CurrentUTC')}'",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"sink": {
-						"type": "SnowflakeSink",
-						"preCopyScript": {
-							"value": "TRUNCATE TABLE @{pipeline().parameters.stgSchemaName}.@{pipeline().parameters.BronzeTableName}",
-							"type": "Expression"
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
 						},
-						"importSettings": {
-							"type": "SnowflakeImportCopyCommand"
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
 						}
 					},
 					"enableStaging": true,
-					"stagingSettings": {
-						"linkedServiceName": {
-							"referenceName": "AzureBlobStorage1",
-							"type": "LinkedServiceReference"
-						},
-						"path": "staging"
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
 					}
 				},
 				"inputs": [
 					{
-						"referenceName": "F0006",
+						"referenceName": "Watermark",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "SnowFlakeDataset_JDEE1",
-						"type": "DatasetReference",
-						"parameters": {
-							"SchemaName": {
-								"value": "@pipeline().parameters.stgSchemaName",
-								"type": "Expression"
-							},
-							"TableName": {
-								"value": "@pipeline().parameters.BronzeTableName",
-								"type": "Expression"
-							}
-						}
+						"referenceName": "RawParquet",
+						"type": "DatasetReference"
 					}
 				]
 			},
@@ -94,7 +90,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[xellia_poc].[getWaterMarkByDouble]",
+						"sqlReaderStoredProcedureName": "[dbo].[getWaterMarkByDateTime]",
 						"storedProcedureParameters": {
 							"schemaName": {
 								"type": "String",
@@ -142,7 +138,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "SqlServerSource",
+						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
 							"value": "select @{replace(replace(replace(replace(string(variables('srcPrimaryKey')),'\"',''),'[',''),']',''),'\\','')} from @{pipeline().parameters.srcSchemaName}.@{pipeline().parameters.srcTableName} ",
 							"type": "Expression"
@@ -159,18 +155,11 @@
 							"type": "JsonWriteSettings"
 						}
 					},
-					"enableStaging": true,
-					"stagingSettings": {
-						"linkedServiceName": {
-							"referenceName": "AzureBlobStorage1",
-							"type": "LinkedServiceReference"
-						},
-						"path": "staging"
-					}
+					"enableStaging": true
 				},
 				"inputs": [
 					{
-						"referenceName": "F0006",
+						"referenceName": "Watermark",
 						"type": "DatasetReference"
 					}
 				],
@@ -188,52 +177,6 @@
 						}
 					}
 				]
-			},
-			{
-				"name": "Lookup Max LastUpdate",
-				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "Copy To Stage",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SnowflakeSource",
-						"query": {
-							"value": "select MAX(@{variables('lastModifiedDateColumn')}) as lastLoad from @{pipeline().parameters.stgSchemaName}.@{pipeline().parameters.BronzeTableName}",
-							"type": "Expression"
-						},
-						"exportSettings": {
-							"type": "SnowflakeExportCopyCommand"
-						}
-					},
-					"dataset": {
-						"referenceName": "SnowFlakeDataset_JDEE1",
-						"type": "DatasetReference",
-						"parameters": {
-							"SchemaName": {
-								"value": "@pipeline().parameters.stgSchemaName",
-								"type": "Expression"
-							},
-							"TableName": {
-								"value": "@pipeline().parameters.BronzeTableName",
-								"type": "Expression"
-							}
-						}
-					}
-				}
 			},
 			{
 				"name": "Updating Base Table",
@@ -273,38 +216,6 @@
 								"value": "'@{pipeline().parameters.srcTableName}'",
 								"type": "Expression"
 							}
-						},
-						"datasetParameters": {
-							"StageTable": {
-								"SchemaName": {
-									"value": "@pipeline().parameters.stgSchemaName",
-									"type": "Expression"
-								},
-								"TableName": {
-									"value": "@pipeline().parameters.BronzeTableName",
-									"type": "Expression"
-								}
-							},
-							"ExistingBaseTable": {
-								"SchemaName": {
-									"value": "@pipeline().parameters.baseSchemaName",
-									"type": "Expression"
-								},
-								"TableName": {
-									"value": "@pipeline().parameters.GoldTableName",
-									"type": "Expression"
-								}
-							},
-							"BaseTable": {
-								"SchemaName": {
-									"value": "@pipeline().parameters.baseSchemaName",
-									"type": "Expression"
-								},
-								"TableName": {
-									"value": "@pipeline().parameters.GoldTableName",
-									"type": "Expression"
-								}
-							}
 						}
 					},
 					"compute": {
@@ -326,12 +237,6 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
-					},
-					{
-						"activity": "Lookup Max LastUpdate",
-						"dependencyConditions": [
-							"Succeeded"
-						]
 					}
 				],
 				"policy": {
@@ -347,7 +252,7 @@
 					"storedProcedureParameters": {
 						"lastLoad": {
 							"value": {
-								"value": "@activity('Lookup Max LastUpdate').output.firstRow.LASTLOAD\n",
+								"value": "@variables('CurrentUTC')",
 								"type": "Expression"
 							},
 							"type": "Double"
@@ -388,7 +293,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[xellia_poc].[sp_getPrimaryKeys]",
+						"sqlReaderStoredProcedureName": "[dbo].[sp_getPrimaryKeys]",
 						"storedProcedureParameters": {
 							"schema_name": {
 								"type": "String",
@@ -450,7 +355,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[xellia_poc].[sp_getLastUpdateColumn]",
+						"sqlReaderStoredProcedureName": "[dbo].[sp_getLastUpdateColumn]",
 						"storedProcedureParameters": {
 							"schema_name": {
 								"type": "String",
@@ -493,6 +398,19 @@
 					"variableName": "lastModifiedDateColumn",
 					"value": {
 						"value": "@activity('Lookup LastUpdate Column').output.firstRow.LastUpdate_column",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Current UTC",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "CurrentUTC",
+					"value": {
+						"value": "@utcnow()",
 						"type": "Expression"
 					}
 				}
@@ -539,6 +457,9 @@
 			"lastModifiedDateColumn": {
 				"type": "String",
 				"defaultValue": "IVUPMJ"
+			},
+			"CurrentUTC": {
+				"type": "String"
 			}
 		},
 		"folder": {
