@@ -302,7 +302,7 @@
 					"storedProcedureParameters": {
 						"lastLoad": {
 							"value": {
-								"value": "@variables('CurrentUTC')",
+								"value": "@activity('Lookup Max LastUpdate').output.firstRow.LASTLOAD\n",
 								"type": "Expression"
 							},
 							"type": "Double"
