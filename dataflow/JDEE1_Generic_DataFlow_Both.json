@@ -9,7 +9,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "SnowFlakeDataset_JDEE1",
+						"referenceName": "AzureTable1",
 						"type": "DatasetReference"
 					},
 					"name": "StageTable"
@@ -24,7 +24,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "SnowFlakeDataset_SrcTable",
+						"referenceName": "AzureTable1",
 						"type": "DatasetReference"
 					},
 					"name": "ExistingBaseTable"
@@ -33,7 +33,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "SnowFlakeDataset_SrcTable",
+						"referenceName": "AzureTable1",
 						"type": "DatasetReference"
 					},
 					"name": "BaseTable"
@@ -86,6 +86,8 @@
 				"     validateSchema: false,",
 				"     enableCdc: true,",
 				"     mode: 'read',",
+				"     skipInitialLoad: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table',",
 				"     fileSystem: 'bronze',",
 				"     folderPath: 'SapSuccessFactor/USER') ~> StageTable",
@@ -104,6 +106,7 @@
 				"     documentForm: 'documentPerLine') ~> AllPKeyFromSystem",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> ExistingBaseTable",
 				"DropHashColumn alterRow(updateIf(true())) ~> Update",
 				"FindDeletedRows derive(SRC_DELETED_FLG = \"Y\",",
@@ -144,7 +147,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     stageInsert: true) ~> BaseTable"
+				"     errorHandlingOption: 'stopOnFirstError') ~> BaseTable"
 			]
 		}
 	}

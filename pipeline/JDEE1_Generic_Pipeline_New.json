@@ -66,7 +66,17 @@
 				"outputs": [
 					{
 						"referenceName": "AzureTable1",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": {
+								"value": "@pipeline().parameters.stgTableName",
+								"type": "Expression"
+							},
+							"SchemaName": {
+								"value": "@pipeline().parameters.stgSchemaName",
+								"type": "Expression"
+							}
+						}
 					}
 				]
 			},
@@ -210,6 +220,18 @@
 							"srcTableName": {
 								"value": "'@{pipeline().parameters.srcTableName}'",
 								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"StageTable": {
+								"TableName": {
+									"value": "@pipeline().parameters.stgTableName",
+									"type": "Expression"
+								},
+								"SchemaName": {
+									"value": "@pipeline().parameters.stgSchemaName",
+									"type": "Expression"
+								}
 							}
 						}
 					},
