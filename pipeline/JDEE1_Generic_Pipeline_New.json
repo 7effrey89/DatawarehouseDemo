@@ -232,6 +232,26 @@
 									"value": "@pipeline().parameters.stgSchemaName",
 									"type": "Expression"
 								}
+							},
+							"ExistingBaseTable": {
+								"TableName": {
+									"value": "@pipeline().parameters.baseTableName",
+									"type": "Expression"
+								},
+								"SchemaName": {
+									"value": "@pipeline().parameters.baseSchemaName",
+									"type": "Expression"
+								}
+							},
+							"BaseTable": {
+								"TableName": {
+									"value": "@pipeline().parameters.baseTableName",
+									"type": "Expression"
+								},
+								"SchemaName": {
+									"value": "@pipeline().parameters.baseSchemaName",
+									"type": "Expression"
+								}
 							}
 						}
 					},
