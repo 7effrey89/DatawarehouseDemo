@@ -48,6 +48,13 @@
 						"disableMetricsCollection": false
 					},
 					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeStorage2",
+							"type": "LinkedServiceReference"
+						},
+						"path": "staging"
+					},
 					"translator": {
 						"type": "TabularTranslator",
 						"typeConversion": true,
@@ -160,7 +167,14 @@
 							"type": "JsonWriteSettings"
 						}
 					},
-					"enableStaging": true
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeStorage2",
+							"type": "LinkedServiceReference"
+						},
+						"path": "staging"
+					}
 				},
 				"inputs": [
 					{
