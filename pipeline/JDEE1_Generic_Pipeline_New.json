@@ -47,14 +47,7 @@
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
 					},
-					"enableStaging": true,
-					"stagingSettings": {
-						"linkedServiceName": {
-							"referenceName": "AzureDataLakeStorage2",
-							"type": "LinkedServiceReference"
-						},
-						"path": "staging"
-					},
+					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
 						"typeConversion": true,
@@ -498,7 +491,7 @@
 		"parameters": {
 			"srcSchemaName": {
 				"type": "string",
-				"defaultValue": "PRODDTA"
+				"defaultValue": "dbo"
 			},
 			"stgSchemaName": {
 				"type": "string",
@@ -506,11 +499,11 @@
 			},
 			"srcTableName": {
 				"type": "string",
-				"defaultValue": "F4104"
+				"defaultValue": "F4101"
 			},
 			"stgTableName": {
 				"type": "string",
-				"defaultValue": "F4104"
+				"defaultValue": "F4101"
 			},
 			"baseSchemaName": {
 				"type": "string",
@@ -518,27 +511,19 @@
 			},
 			"baseTableName": {
 				"type": "string",
-				"defaultValue": "F4104_2"
+				"defaultValue": "F4101"
 			}
 		},
 		"variables": {
 			"srcPrimaryKey": {
 				"type": "Array",
 				"defaultValue": [
-					"IVXRT",
-					"IVAN8",
-					"IVCIRV",
-					"IVCITM",
-					"IVEXDJ",
-					"IVITM"
+					"IMITM"
 				]
 			},
 			"lastModifiedDateColumn": {
 				"type": "String",
-				"defaultValue": "IVUPMJ"
-			},
-			"CurrentUTC": {
-				"type": "String"
+				"defaultValue": "IMURAT"
 			}
 		},
 		"folder": {
