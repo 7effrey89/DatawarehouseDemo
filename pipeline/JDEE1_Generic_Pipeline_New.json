@@ -17,12 +17,6 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
-					},
-					{
-						"activity": "Current UTC",
-						"dependencyConditions": [
-							"Succeeded"
-						]
 					}
 				],
 				"policy": {
@@ -37,20 +31,21 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "select * from @{pipeline().parameters.srcSchemaName}.@{pipeline().parameters.srcTableName} WHERE @{variables('lastModifiedDateColumn')}>'@{replace(string(activity('Lookup WaterMark').output.firstRow.lastLoad),'\"','')}' AND @{variables('lastModifiedDateColumn')}<='@{variables('CurrentUTC')}'",
+							"value": "select * from @{pipeline().parameters.srcSchemaName}.@{pipeline().parameters.srcTableName} WHERE @{variables('lastModifiedDateColumn')}>'@{replace(string(activity('Lookup WaterMark').output.firstRow.lastLoad),'\"','')}'",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"sink": {
-						"type": "ParquetSink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
+						"type": "AzureSqlSink",
+						"preCopyScript": {
+							"value": "TRUNCATE TABLE @{pipeline().parameters.stgSchemaName}.@{pipeline().parameters.stgTableName}",
+							"type": "Expression"
 						},
-						"formatSettings": {
-							"type": "ParquetWriteSettings"
-						}
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
 					},
 					"enableStaging": true,
 					"translator": {
@@ -70,7 +65,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "RawParquet",
+						"referenceName": "AzureTable1",
 						"type": "DatasetReference"
 					}
 				]
@@ -234,6 +229,12 @@
 				"dependsOn": [
 					{
 						"activity": "Updating Base Table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Lookup Max LastUpdate",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -403,15 +404,37 @@
 				}
 			},
 			{
-				"name": "Current UTC",
-				"type": "SetVariable",
-				"dependsOn": [],
+				"name": "Lookup Max LastUpdate",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Copy To Stage",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "CurrentUTC",
-					"value": {
-						"value": "@utcnow()",
-						"type": "Expression"
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "select MAX(@{variables('lastModifiedDateColumn')}) as lastLoad from @{pipeline().parameters.stgSchemaName}.@{pipeline().parameters.stgTableName}",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Watermark",
+						"type": "DatasetReference"
 					}
 				}
 			}
