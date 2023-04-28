@@ -110,7 +110,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[xellia_poc].[UpdateWatermarkByDateTime]",
+					"storedProcedureName": "[dbo].[UpdateWatermarkByDateTime]",
 					"storedProcedureParameters": {
 						"lastLoad": {
 							"value": {
@@ -161,13 +161,26 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "SnowflakeSource",
-						"query": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
 							"value": "select MAX(LAST_UPDATED_TS) as lastLoad from @{pipeline().parameters.dimSchemaName}.@{pipeline().parameters.dimTableName}",
 							"type": "Expression"
 						},
-						"exportSettings": {
-							"type": "SnowflakeExportCopyCommand"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureTable1",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": {
+								"value": "@pipeline().parameters.dimTableName",
+								"type": "Expression"
+							},
+							"SchemaName": {
+								"value": "@pipeline().parameters.dimSchemaName",
+								"type": "Expression"
+							}
 						}
 					}
 				}
@@ -178,6 +191,18 @@
 				"dependsOn": [
 					{
 						"activity": "Staging dimProduct",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set PrimaryKey Var",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Non-Pkeys var",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -197,11 +222,11 @@
 						"type": "DataFlowReference",
 						"parameters": {
 							"primaryKeys": {
-								"value": "@pipeline().parameters.primaryKey",
+								"value": "@variables('primaryKeys')",
 								"type": "Expression"
 							},
 							"ColumnsToHash": {
-								"value": "@pipeline().parameters.ColumnsToHash",
+								"value": "@variables('ColumnsToHash')",
 								"type": "Expression"
 							}
 						}
@@ -213,6 +238,130 @@
 					"traceLevel": "Fine",
 					"continuationSettings": {
 						"customizedCheckpointKey": "33b13fab-baf1-4786-813a-6c922a796093"
+					}
+				}
+			},
+			{
+				"name": "Lookup PrimaryKeys",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[sp_getPrimaryKeys]",
+						"storedProcedureParameters": {
+							"schema_name": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.dimSchemaName",
+									"type": "Expression"
+								}
+							},
+							"table_name": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.dimTableName",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Watermark",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "Set PrimaryKey Var",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup PrimaryKeys",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "primaryKeys",
+					"value": {
+						"value": "@split(activity('Lookup PrimaryKeys').output.firstRow.primaryKeys,',')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Lookup Non-Pkeys",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[sp_getNonPrimaryKeys]",
+						"storedProcedureParameters": {
+							"schema_name": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.dimSchemaName",
+									"type": "Expression"
+								}
+							},
+							"table_name": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.dimTableName",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Watermark",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "Set Non-Pkeys var",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup Non-Pkeys",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ColumnsToHash",
+					"value": {
+						"value": "@split(activity('Lookup Non-Pkeys').output.firstRow.primaryKeys,',')",
+						"type": "Expression"
 					}
 				}
 			}
@@ -234,11 +383,11 @@
 			},
 			"stgTableName": {
 				"type": "string",
-				"defaultValue": "TMP_DIMPRODUCT"
+				"defaultValue": "DIMPRODUCT"
 			},
 			"stgSchemaName": {
 				"type": "string",
-				"defaultValue": "INT"
+				"defaultValue": "STG"
 			},
 			"ColumnsToHash": {
 				"type": "array",
@@ -277,6 +426,14 @@
 					"ACTUALSFILTER",
 					"PLANNINGFILTER"
 				]
+			}
+		},
+		"variables": {
+			"primaryKeys": {
+				"type": "Array"
+			},
+			"ColumnsToHash": {
+				"type": "Array"
 			}
 		},
 		"folder": {
