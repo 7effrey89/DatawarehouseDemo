@@ -8,26 +8,14 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "SnowFlakeDataset_dimFctTable",
-						"type": "DatasetReference"
-					},
 					"name": "StageTable"
 				},
 				{
-					"dataset": {
-						"referenceName": "SnowFlakeDataset_dimFctTable",
-						"type": "DatasetReference"
-					},
 					"name": "ExistingEdw"
 				}
 			],
 			"sinks": [
 				{
-					"dataset": {
-						"referenceName": "SnowFlakeDataset_dimFctTable",
-						"type": "DatasetReference"
-					},
 					"name": "edwDimension"
 				}
 			],
@@ -90,12 +78,10 @@
 				"     validateSchema: false,",
 				"     enableCdc: true,",
 				"     mode: 'read',",
-				"     format: 'table',",
 				"     fileSystem: 'bronze',",
 				"     folderPath: 'SapSuccessFactor/USER') ~> StageTable",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     format: 'table') ~> ExistingEdw",
+				"     validateSchema: false) ~> ExistingEdw",
 				"RemoveUneededColumns1 alterRow(updateIf(true())) ~> MarkAsUpdate",
 				"FilterForUpdatedValues derive(ACTIVE_IND = \"N\",",
 				"          EFFECTIVE_END_DATE = currentUTC(),",
@@ -152,15 +138,9 @@
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:true,",
-				"     upsertable:true,",
-				"     keys:($primaryKeys),",
-				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     stageInsert: true) ~> edwDimension"
+				"     format: 'table') ~> edwDimension"
 			]
 		}
 	}

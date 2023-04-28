@@ -68,16 +68,6 @@
 								"value": "[\"SALESORDERID\",\"SALESORDERLINEID\"]",
 								"type": "Expression"
 							}
-						},
-						"datasetParameters": {
-							"StageTable": {
-								"SchemaName": "INT",
-								"TableName": "TMP_FACTSALESORDER"
-							},
-							"edwFact": {
-								"SchemaName": "EDW",
-								"TableName": "FACTSALESORDER"
-							}
 						}
 					},
 					"compute": {
