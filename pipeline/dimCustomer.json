@@ -207,32 +207,32 @@
 						},
 						"datasetParameters": {
 							"StageTable": {
-								"SchemaName": {
-									"value": "@pipeline().parameters.stgSchemaName",
-									"type": "Expression"
-								},
 								"TableName": {
 									"value": "@pipeline().parameters.stgTableName",
+									"type": "Expression"
+								},
+								"SchemaName": {
+									"value": "@pipeline().parameters.stgSchemaName",
 									"type": "Expression"
 								}
 							},
 							"ExistingEdw": {
-								"SchemaName": {
-									"value": "@pipeline().parameters.dimSchemaName",
-									"type": "Expression"
-								},
 								"TableName": {
 									"value": "@pipeline().parameters.dimTableName",
+									"type": "Expression"
+								},
+								"SchemaName": {
+									"value": "@pipeline().parameters.dimSchemaName",
 									"type": "Expression"
 								}
 							},
 							"edwDimension": {
-								"SchemaName": {
-									"value": "@pipeline().parameters.dimSchemaName",
-									"type": "Expression"
-								},
 								"TableName": {
 									"value": "@pipeline().parameters.dimTableName",
+									"type": "Expression"
+								},
+								"SchemaName": {
+									"value": "@pipeline().parameters.dimSchemaName",
 									"type": "Expression"
 								}
 							}
@@ -309,6 +309,11 @@
 					"ACTUALSFILTER",
 					"PLANNINGFILTER"
 				]
+			}
+		},
+		"variables": {
+			"primaryKeys": {
+				"type": "Array"
 			}
 		},
 		"folder": {

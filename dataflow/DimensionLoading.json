@@ -8,14 +8,26 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "AzureTable1",
+						"type": "DatasetReference"
+					},
 					"name": "StageTable"
 				},
 				{
+					"dataset": {
+						"referenceName": "AzureTable1",
+						"type": "DatasetReference"
+					},
 					"name": "ExistingEdw"
 				}
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "AzureTable1",
+						"type": "DatasetReference"
+					},
 					"name": "edwDimension"
 				}
 			],
@@ -78,10 +90,15 @@
 				"     validateSchema: false,",
 				"     enableCdc: true,",
 				"     mode: 'read',",
+				"     skipInitialLoad: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table',",
 				"     fileSystem: 'bronze',",
 				"     folderPath: 'SapSuccessFactor/USER') ~> StageTable",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> ExistingEdw",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> ExistingEdw",
 				"RemoveUneededColumns1 alterRow(updateIf(true())) ~> MarkAsUpdate",
 				"FilterForUpdatedValues derive(ACTIVE_IND = \"N\",",
 				"          EFFECTIVE_END_DATE = currentUTC(),",
@@ -138,9 +155,15 @@
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:true,",
+				"     keys:($primaryKeys),",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     format: 'table') ~> edwDimension"
+				"     errorHandlingOption: 'stopOnFirstError') ~> edwDimension"
 			]
 		}
 	}

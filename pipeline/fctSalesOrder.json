@@ -68,6 +68,16 @@
 								"value": "[\"SALESORDERID\",\"SALESORDERLINEID\"]",
 								"type": "Expression"
 							}
+						},
+						"datasetParameters": {
+							"StageTable": {
+								"TableName": "TMP_FACTSALESORDER",
+								"SchemaName": "INT"
+							},
+							"edwFact": {
+								"TableName": "FACTSALESORDER",
+								"SchemaName": "EDW"
+							}
 						}
 					},
 					"compute": {
@@ -81,6 +91,11 @@
 				}
 			}
 		],
+		"variables": {
+			"primaryKeys": {
+				"type": "Array"
+			}
+		},
 		"folder": {
 			"name": "JD Edwards/Facts"
 		},

@@ -229,6 +229,52 @@
 								"value": "@variables('ColumnsToHash')",
 								"type": "Expression"
 							}
+						},
+						"datasetParameters": {
+							"StageTable": {
+								"TableName": {
+									"value": "@pipeline().parameters.dimSchemaName",
+									"type": "Expression"
+								}
+							},
+							"ExistingEdw": {
+								"TableName": {
+									"value": "@pipeline().parameters.dimTableName",
+									"type": "Expression"
+								}
+							},
+							"edwDimension": {
+								"TableName": {
+									"value": "@pipeline().parameters.dimTableName",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceParameters": {
+							"StageTable": {
+								"schemaLinkedService": {
+									"TableName": {
+										"value": "@pipeline().parameters.dimTableName",
+										"type": "Expression"
+									}
+								}
+							},
+							"ExistingEdw": {
+								"schemaLinkedService": {
+									"TableName": {
+										"value": "@pipeline().parameters.dimTableName",
+										"type": "Expression"
+									}
+								}
+							},
+							"edwDimension": {
+								"schemaLinkedService": {
+									"TableName": {
+										"value": "@pipeline().parameters.dimTableName",
+										"type": "Expression"
+									}
+								}
+							}
 						}
 					},
 					"compute": {

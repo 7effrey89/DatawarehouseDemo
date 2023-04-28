@@ -9,7 +9,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "SnowFlakeDataset_dimFctTable",
+						"referenceName": "AzureTable1",
 						"type": "DatasetReference"
 					},
 					"name": "StageTable"
@@ -18,7 +18,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "SnowFlakeDataset_dimFctTable",
+						"referenceName": "AzureTable1",
 						"type": "DatasetReference"
 					},
 					"name": "edwFact"
@@ -37,6 +37,8 @@
 				"     validateSchema: false,",
 				"     enableCdc: true,",
 				"     mode: 'read',",
+				"     skipInitialLoad: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table',",
 				"     fileSystem: 'bronze',",
 				"     folderPath: 'SapSuccessFactor/USER') ~> StageTable",
@@ -54,7 +56,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     stageInsert: true) ~> edwFact"
+				"     errorHandlingOption: 'stopOnFirstError') ~> edwFact"
 			]
 		}
 	}
