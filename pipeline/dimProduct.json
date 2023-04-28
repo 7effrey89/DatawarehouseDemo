@@ -235,11 +235,19 @@
 								"TableName": {
 									"value": "@pipeline().parameters.dimSchemaName",
 									"type": "Expression"
+								},
+								"SchemaName": {
+									"value": "@pipeline().parameters.stgSchemaName",
+									"type": "Expression"
 								}
 							},
 							"ExistingEdw": {
 								"TableName": {
 									"value": "@pipeline().parameters.dimTableName",
+									"type": "Expression"
+								},
+								"SchemaName": {
+									"value": "@pipeline().parameters.dimSchemaName",
 									"type": "Expression"
 								}
 							},
@@ -247,32 +255,10 @@
 								"TableName": {
 									"value": "@pipeline().parameters.dimTableName",
 									"type": "Expression"
-								}
-							}
-						},
-						"linkedServiceParameters": {
-							"StageTable": {
-								"schemaLinkedService": {
-									"TableName": {
-										"value": "@pipeline().parameters.dimTableName",
-										"type": "Expression"
-									}
-								}
-							},
-							"ExistingEdw": {
-								"schemaLinkedService": {
-									"TableName": {
-										"value": "@pipeline().parameters.dimTableName",
-										"type": "Expression"
-									}
-								}
-							},
-							"edwDimension": {
-								"schemaLinkedService": {
-									"TableName": {
-										"value": "@pipeline().parameters.dimTableName",
-										"type": "Expression"
-									}
+								},
+								"SchemaName": {
+									"value": "@pipeline().parameters.dimSchemaName",
+									"type": "Expression"
 								}
 							}
 						}
