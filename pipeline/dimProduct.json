@@ -39,6 +39,16 @@
 							"USERDEFINEDCODEVALUES": {
 								"TableName": "VUSERDEFINEDCODEVALUES",
 								"SchemaName": "SRC_JDEE1"
+							},
+							"tmpDIMPRODUCT": {
+								"TableName": {
+									"value": "@pipeline().parameters.stgTableName",
+									"type": "Expression"
+								},
+								"SchemaName": {
+									"value": "@pipeline().parameters.stgSchemaName",
+									"type": "Expression"
+								}
 							}
 						}
 					},

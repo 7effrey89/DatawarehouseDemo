@@ -24,6 +24,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "AzureTable1",
+						"type": "DatasetReference"
+					},
 					"name": "tmpDIMPRODUCT"
 				}
 			],
@@ -467,10 +471,15 @@
 				"UserDefinedCodes10 filter(PRODUCTCODE==\"41\" && USERDEFINEDCODES ==\"P4\") ~> U10",
 				"renaming sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     truncate: true,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     format: 'table',",
+				"     errorHandlingOption: 'stopOnFirstError',",
 				"     schemaName: 'INT',",
 				"     store: 'snowflake') ~> tmpDIMPRODUCT"
 			]
