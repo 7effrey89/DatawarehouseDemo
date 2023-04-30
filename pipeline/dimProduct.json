@@ -411,7 +411,7 @@
 		"parameters": {
 			"dimTableName": {
 				"type": "string",
-				"defaultValue": "DIMPRODUCT"
+				"defaultValue": "DimProduct"
 			},
 			"dimSchemaName": {
 				"type": "string",
@@ -425,7 +425,7 @@
 			},
 			"stgTableName": {
 				"type": "string",
-				"defaultValue": "DIMPRODUCT"
+				"defaultValue": "DimProduct"
 			},
 			"stgSchemaName": {
 				"type": "string",
