@@ -32,15 +32,15 @@
 								"SchemaName": "SRC_JDEE1"
 							},
 							"fctSALESORDER": {
-								"TableName": "VSALESORDERDETAILFILE",
-								"SchemaName": "SRC_JDEE1"
+								"TableName": "FactSalesOrder",
+								"SchemaName": "EDW"
 							}
 						},
 						"linkedServiceParameters": {
 							"fctSALESORDER": {
 								"schemaLinkedService": {
-									"TableName": "VSALESORDERDETAILFILE",
-									"SchemaName": "SRC_JDEE1"
+									"TableName": "FactSalesOrder",
+									"SchemaName": "EDW"
 								}
 							}
 						}
