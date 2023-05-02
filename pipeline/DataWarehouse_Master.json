@@ -1,5 +1,5 @@
 {
-	"name": "RunAll",
+	"name": "DataWarehouse_Master",
 	"properties": {
 		"activities": [
 			{
