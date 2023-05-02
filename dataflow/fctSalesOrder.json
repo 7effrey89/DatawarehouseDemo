@@ -65,10 +65,6 @@
 				},
 				{
 					"name": "RenameColumnNames"
-				},
-				{
-					"name": "filterAwayNulls",
-					"description": "I identified the dimension Customer was wwas filtering away certain customerID keys needed for this fact. The fact didn't allow nulls so using this to continue\n"
 				}
 			],
 			"scriptLines": [
@@ -573,8 +569,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> RenameColumnNames",
-				"RenameColumnNames filter(!isNull(SK_DIMPRODUCT)&&!isNull(SK_SHIPTOCUSTOMERLEVELID)&&!isNull(SK_BILLTOCUSTOMERLEVELID)&&!isNull(SALESORDERID)&&!isNull(SALESORDERLINEID)) ~> filterAwayNulls",
-				"filterAwayNulls sink(allowSchemaDrift: true,",
+				"RenameColumnNames sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
