@@ -30,6 +30,18 @@
 							"vSalesOrderDetailFile": {
 								"TableName": "VSALESORDERDETAILFILE",
 								"SchemaName": "SRC_JDEE1"
+							},
+							"fctSALESORDER": {
+								"TableName": "VSALESORDERDETAILFILE",
+								"SchemaName": "SRC_JDEE1"
+							}
+						},
+						"linkedServiceParameters": {
+							"fctSALESORDER": {
+								"schemaLinkedService": {
+									"TableName": "VSALESORDERDETAILFILE",
+									"SchemaName": "SRC_JDEE1"
+								}
 							}
 						}
 					},
