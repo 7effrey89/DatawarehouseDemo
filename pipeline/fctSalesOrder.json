@@ -83,8 +83,8 @@
 						},
 						"datasetParameters": {
 							"StageTable": {
-								"TableName": "TMP_FACTSALESORDER",
-								"SchemaName": "INT"
+								"TableName": "FACTSALESORDER",
+								"SchemaName": "STG"
 							},
 							"edwFact": {
 								"TableName": "FACTSALESORDER",
