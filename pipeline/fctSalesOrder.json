@@ -35,14 +35,6 @@
 								"TableName": "FactSalesOrder",
 								"SchemaName": "EDW"
 							}
-						},
-						"linkedServiceParameters": {
-							"fctSALESORDER": {
-								"schemaLinkedService": {
-									"TableName": "FactSalesOrder",
-									"SchemaName": "EDW"
-								}
-							}
 						}
 					},
 					"compute": {
