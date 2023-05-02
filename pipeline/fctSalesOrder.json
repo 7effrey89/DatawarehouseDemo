@@ -33,7 +33,7 @@
 							},
 							"fctSALESORDER": {
 								"TableName": "FactSalesOrder",
-								"SchemaName": "EDW"
+								"SchemaName": "STG"
 							}
 						}
 					},
