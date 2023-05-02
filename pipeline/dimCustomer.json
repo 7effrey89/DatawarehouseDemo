@@ -64,7 +64,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[xellia_poc].[getWaterMarkByDateTime]",
+						"sqlReaderStoredProcedureName": "[dbo].[getWaterMarkByDateTime]",
 						"storedProcedureParameters": {
 							"schemaName": {
 								"type": "String",
@@ -110,7 +110,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[xellia_poc].[UpdateWatermarkByDateTime]",
+					"storedProcedureName": "[dbo].[UpdateWatermarkByDateTime]",
 					"storedProcedureParameters": {
 						"lastLoad": {
 							"value": {
@@ -161,13 +161,26 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "SnowflakeSource",
-						"query": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
 							"value": "select MAX(LAST_UPDATED_TS) as lastLoad from @{pipeline().parameters.dimSchemaName}.@{pipeline().parameters.dimTableName}",
 							"type": "Expression"
 						},
-						"exportSettings": {
-							"type": "SnowflakeExportCopyCommand"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureTable1",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": {
+								"value": "@pipeline().parameters.dimTableName",
+								"type": "Expression"
+							},
+							"SchemaName": {
+								"value": "@pipeline().parameters.dimSchemaName",
+								"type": "Expression"
+							}
 						}
 					}
 				}
@@ -266,11 +279,11 @@
 			},
 			"stgTableName": {
 				"type": "string",
-				"defaultValue": "TMP_DIMCUSTOMER"
+				"defaultValue": "DIMCUSTOMER"
 			},
 			"stgSchemaName": {
 				"type": "string",
-				"defaultValue": "INT"
+				"defaultValue": "STG"
 			},
 			"ColumnsToHash": {
 				"type": "array",
