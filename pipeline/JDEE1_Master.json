@@ -1,5 +1,5 @@
 {
-	"name": "JDEE1_master",
+	"name": "JDEE1_Master",
 	"properties": {
 		"activities": [
 			{
@@ -28,7 +28,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "JDEE1_Generic_Pipeline_New",
+									"referenceName": "JDEE1_Generic_Pipeline",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": false,
@@ -91,7 +91,7 @@
 			}
 		],
 		"folder": {
-			"name": "JD Edwards/Extraction"
+			"name": "Extraction/JD Edwards"
 		},
 		"annotations": [],
 		"lastPublishTime": "2023-03-30T20:35:25Z"

@@ -2,7 +2,7 @@
 	"name": "fctSalesOrder",
 	"properties": {
 		"folder": {
-			"name": "JDEE1/Facts"
+			"name": "EDW/Facts"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {

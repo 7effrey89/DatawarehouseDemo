@@ -1,5 +1,5 @@
 {
-	"name": "JDEE1_Generic_Pipeline_New",
+	"name": "JDEE1_Generic_Pipeline",
 	"properties": {
 		"activities": [
 			{
@@ -217,7 +217,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "JDEE1_Generic_DataFlow_Both",
+						"referenceName": "JDEE1_Generic_DataFlow",
 						"type": "DataFlowReference",
 						"parameters": {
 							"primaryKeys": {
@@ -527,7 +527,7 @@
 			}
 		},
 		"folder": {
-			"name": "JD Edwards/Extraction"
+			"name": "Extraction/JD Edwards"
 		},
 		"annotations": [],
 		"lastPublishTime": "2023-03-30T19:33:45Z"
