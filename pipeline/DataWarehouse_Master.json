@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "JDEE1_master",
+						"referenceName": "JDEE1_Master",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
