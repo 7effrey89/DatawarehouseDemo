@@ -2,7 +2,7 @@
 	"name": "dimCustomer",
 	"properties": {
 		"folder": {
-			"name": "JDEE1/Dimensions"
+			"name": "EDW/Dimensions"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {

@@ -2,7 +2,7 @@
 	"name": "JDEE1_Generic_DataFlow",
 	"properties": {
 		"folder": {
-			"name": "JDEE1/Extraction"
+			"name": "Extraction"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
