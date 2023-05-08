@@ -217,7 +217,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "JDEE1_Generic_DataFlow_Both",
+						"referenceName": "JDEE1_Generic_DataFlow",
 						"type": "DataFlowReference",
 						"parameters": {
 							"primaryKeys": {
