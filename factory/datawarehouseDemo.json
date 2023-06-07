@@ -1,0 +1,9 @@
+{
+	"name": "datawarehouseDemo",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ebe12416-90e0-47d1-a653-583aae98364c",
+		"tenantId": "16b3c013-d300-468d-ac64-7eda0820b6d3"
+	}
+}
